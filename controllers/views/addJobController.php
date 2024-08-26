@@ -1,13 +1,14 @@
 <?php
 include '../../config/db.php';
 
-//define varaibale and set to empty values
+// Define variables and set to empty values
 $title = $description = $position = $location =
     $deadline = $salary = $experience = $education =
     $no_employee = $skills = $company_name = $job_type =
     $application_email = $application_url = $status =
     $remote_option = $category = $logo_url = "";
-//for error
+
+// For errors
 $titleErr = $descriptionErr = $positionErr = $locationErr =
     $deadlineErr = $salaryErr = $experienceErr = $educationErr =
     $no_employeeErr = $skillsErr = $company_nameErr = $job_typeErr =
@@ -28,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         $description = testInput($_POST["description"]);
     }
-    //Position
+    // Position
     if (empty($_POST["position"])) {
         $positionErr = "Position is required";
     } else {
@@ -52,7 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         $salary = testInput($_POST["salary"]);
     }
-    //Experience
+    // Experience
     if (empty($_POST["experience"])) {
         $experienceErr = "Experience is required";
     } else {
@@ -65,7 +66,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $education = testInput($_POST["education"]);
     }
     // No_employee
-
     if (empty($_POST["no_employee"])) {
         $no_employeeErr = "No of employee is required";
     } else {
@@ -95,35 +95,57 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         $application_email = testInput($_POST["application_email"]);
     }
-    // Application Url
+    // Application URL
     if (empty($_POST["application_url"])) {
         $application_urlErr = "Application URL is required";
     } else {
         $application_url = testInput($_POST["application_url"]);
     }
-    //Status
+    // Status
     if (empty($_POST["status"])) {
         $statusErr = "Status is required";
     } else {
         $status = testInput($_POST["status"]);
     }
     // Remote option
-    if (empty($_POST["remote_option"])) {
-        $remote_optionErr = "Remote option is required";
-    } else {
-        $remote_option = testInput($_POST["remote_option"]);
-    }
+    // Use this line to handle the remote_option checkbox
+    $remote_option = isset($_POST["remote_option"]) ? (int)$_POST["remote_option"] : 0;
+
     // Category
     if (empty($_POST["category"])) {
         $categoryErr = "Category is required";
     } else {
         $category = testInput($_POST["category"]);
     }
-    // Logo Url
+    // Logo URL
     if (empty($_POST["logo_url"])) {
-        $logo_urlErr = "Logo is required";
+        $logo_urlErr = "Logo URL is required";
     } else {
         $logo_url = testInput($_POST["logo_url"]);
+    }
+
+    // If no errors, insert data into the database using prepared statements
+    if (
+        empty($titleErr) && empty($descriptionErr) && empty($positionErr) && empty($locationErr) &&
+        empty($deadlineErr) && empty($salaryErr) && empty($experienceErr) && empty($educationErr) &&
+        empty($no_employeeErr) && empty($skillsErr) && empty($company_nameErr) && empty($job_typeErr) &&
+        empty($application_emailErr) && empty($application_urlErr) && empty($statusErr) &&
+        empty($categoryErr) && empty($logo_urlErr)
+    ) {
+        // Prepare the SQL statement
+        $stmt = $conn->prepare("INSERT INTO jobs (title, description, position, location, deadline, salary, experience, education, no_employee, skills, company_name, job_type, application_email, application_url, status, remote_option, category, logo_url)
+                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        // Bind parameters with corresponding types
+        $stmt->bind_param("sssssdissssssssss", $title, $description, $position, $location, $deadline, $salary, $experience, $education, $no_employee, $skills, $company_name, $job_type, $application_email, $application_url, $status, $remote_option, $category, $logo_url);
+
+        if ($stmt->execute()) {
+            echo "New job created successfully";
+        } else {
+            echo "Error: " . $stmt->error;
+        }
+
+        // Close the statement
+        $stmt->close();
     }
 }
 
@@ -134,3 +156,4 @@ function testInput($data)
     $data = htmlspecialchars($data);
     return $data;
 }
+$conn->close();

@@ -1,7 +1,6 @@
 <?php
 
 //Redirects to the logged in page if the user is looged in 
-
 session_start();
 
 // Check if user is already logged in and if the user role is set in the session
