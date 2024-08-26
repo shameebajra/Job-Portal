@@ -1,18 +1,18 @@
 <?php
-// Start session
 session_start();
 
-// Check if user is already logged in
-if (isset($_SESSION['username'])) {
+// Check if user is already logged in and if the user role is set in the session
+if (isset($_SESSION['username']) && isset($_SESSION['role'])) {
+    $user_role = $_SESSION['role']; // Retrieve user role from session
 
-    // Redirect user to appropriate page
+    // Redirect user to the appropriate page
     if ($user_role == 'Admin') {
         header("location: ../views/admin/adminDashboard.php");
         exit();
     } else if ($user_role == 'User') {
         header("location: ../views/userDashboard.php");
         exit();
-    };
+    }
 }
 
 require_once "../config/db.php";
