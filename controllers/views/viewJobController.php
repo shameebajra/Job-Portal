@@ -53,9 +53,8 @@ if ($result->num_rows > 0) {
                 <td>" . ($row["remote_option"] ? 'Yes' : 'No') . "</td>
                 <td>" . $row["category"] . "</td>
                 <td>" . $row["logo_url"] . "</td>
-                <td>Edit</td>
-                <td>Delete</td>
-
+                <td><a href='/job-portal/views/admin/editJob.php?id=" . $row["id"] . "'>Edit</a></td>
+                <td><a href='/job-portal/controllers/views/deleteJobController.php?id=" . $row["id"] . "' onclick=\"return confirm('Are you sure you want to delete this job?');\">Delete</a></td>
               </tr>";
     }
     echo "</table>";
