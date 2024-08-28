@@ -12,7 +12,7 @@ if (isset($_SESSION['username']) && isset($_SESSION['role'])) {
         header("location: ../views/admin/adminDashboard.php");
         exit();
     } else if ($user_role == 'User') {
-        header("location: ../views/userDashboard.php");
+        header("location: ../views/user/userDashboard.php");
         exit();
     }
 }

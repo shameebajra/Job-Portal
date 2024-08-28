@@ -1,5 +1,11 @@
 <?php
+session_start();
 include '../../config/db.php';
+
+//Redirect to the login page if not logged in
+if (!isset($_SESSION['id'])) {
+    header("location:/job-portal/templates/login.php");
+}
 
 // Fetch all job entries from the database
 $sql = "SELECT * FROM jobs";
@@ -54,7 +60,7 @@ if ($result->num_rows > 0) {
                 <td>" . $row["category"] . "</td>
                 <td>" . $row["logo_url"] . "</td>
                 <td><a href='/job-portal/views/admin/editJob.php?id=" . $row["id"] . "'>Edit</a></td>
-                <td><a href='/job-portal/controllers/views/deleteJobController.php?id=" . $row["id"] . "' onclick=\"return confirm('Are you sure you want to delete this job?');\">Delete</a></td>
+                <td><a href='/job-portal/controllers/jobs/deleteJobController.php?id=" . $row["id"] . "' onclick=\"return confirm('Are you sure you want to delete this job?');\">Delete</a></td>
               </tr>";
     }
     echo "</table>";

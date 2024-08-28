@@ -1,5 +1,11 @@
 <?php
+session_start();
 include '../../config/db.php';
+
+//Redirect to the login page if not logged in
+if (!isset($_SESSION['id'])) {
+    header("location:/job-portal/templates/login.php");
+}
 
 // Define variables and set to empty values
 $title = $description = $position = $location =
@@ -15,7 +21,49 @@ $titleErr = $descriptionErr = $positionErr = $locationErr =
     $application_emailErr = $application_urlErr = $statusErr =
     $remote_optionErr = $categoryErr = $logo_urlErr = "";
 
+// Fetch job data if 'id' is set
+if (isset($_GET['id'])) {
+    $job_id = $_GET['id'];
+
+    $sql = "SELECT * FROM jobs WHERE id = ?";
+    if ($stmt = $conn->prepare($sql)) {
+        $stmt->bind_param("i", $job_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows > 0) {
+            $job = $result->fetch_assoc();
+            $title = $job['title'];
+            $description = $job['description'];
+            $position = $job['position'];
+            $location = $job['location'];
+            $deadline = $job['deadline'];
+            $salary = $job['salary'];
+            $experience = $job['experience'];
+            $education = $job['education'];
+            $no_employee = $job['no_employee'];
+            $skills = $job['skills'];
+            $company_name = $job['company_name'];
+            $job_type = $job['job_type'];
+            $application_email = $job['application_email'];
+            $application_url = $job['application_url'];
+            $status = $job['status'];
+            $remote_option = $job['remote_option'];
+            $category = $job['category'];
+            $logo_url = $job['logo_url'];
+        } else {
+            echo "No job found with ID: $job_id";
+        }
+        $stmt->close();
+    } else {
+        echo "Error preparing SQL statement: " . $conn->error;
+    }
+}
+
+// Process form submission if POST request
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Get job ID from hidden field
+    $job_id = $_POST['id'];
+
     // Title
     if (empty($_POST["title"])) {
         $titleErr = "Title is required";
@@ -91,7 +139,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Application email
     if (empty($_POST["application_email"])) {
         $application_emailErr = "Application email is required";
-    } else if (!filter_var($application_email, FILTER_VALIDATE_EMAIL)) {
+    } else if (!filter_var($_POST["application_email"], FILTER_VALIDATE_EMAIL)) {
         $application_emailErr = "Invalid email format";
     } else {
         $application_email = testInput($_POST["application_email"]);
@@ -99,8 +147,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Application URL
     if (empty($_POST["application_url"])) {
         $application_urlErr = "Application URL is required";
-    } else if (!preg_match("/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i", $application_urlErr)) {
-        $application_urlErr = "Invalid URL ";
+    } else if (!preg_match("/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i", $_POST["application_url"])) {
+        $application_urlErr = "Invalid URL";
     } else {
         $application_url = testInput($_POST["application_url"]);
     }
@@ -111,7 +159,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $status = testInput($_POST["status"]);
     }
     // Remote option
-    // Use this line to handle the remote_option checkbox
     $remote_option = isset($_POST["remote_option"]) ? (int)$_POST["remote_option"] : 0;
 
     // Category
@@ -123,13 +170,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Logo URL
     if (empty($_POST["logo_url"])) {
         $logo_urlErr = "Logo URL is required";
-    } else if (!preg_match("/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i", $logo_urlErr)) {
-        $logo_urlErr = "Invalid";
+    } else if (!preg_match("/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i", $_POST["logo_url"])) {
+        $logo_urlErr = "Invalid URL";
     } else {
         $logo_url = testInput($_POST["logo_url"]);
     }
 
-    // If no errors, insert data into the database using direct SQL query
+    // If no errors, update data in the database using SQL query
     if (
         empty($titleErr) && empty($descriptionErr) && empty($positionErr) && empty($locationErr) &&
         empty($deadlineErr) && empty($salaryErr) && empty($experienceErr) && empty($educationErr) &&
@@ -156,12 +203,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $category = $conn->real_escape_string($category);
         $logo_url = $conn->real_escape_string($logo_url);
 
-        // Construct the SQL query
-        $sql = "INSERT INTO jobs (title, description, position, location, deadline, salary, experience, education, no_employee, skills, company_name, job_type, application_email, application_url, status, remote_option, category, logo_url)
-                VALUES ('$title', '$description', '$position', '$location', '$deadline', '$salary', '$experience', '$education', '$no_employee', '$skills', '$company_name', '$job_type', '$application_email', '$application_url', '$status', $remote_option, '$category', '$logo_url')";
+        // Construct the SQL query for updating the job entry
+        $sql = "UPDATE jobs SET
+            title='$title', description='$description', position='$position', location='$location',
+            deadline='$deadline', salary='$salary', experience='$experience', education='$education',
+            no_employee='$no_employee', skills='$skills', company_name='$company_name', job_type='$job_type',
+            application_email='$application_email', application_url='$application_url', status='$status',
+            remote_option=$remote_option, category='$category', logo_url='$logo_url'
+            WHERE id=$job_id";
 
         if ($conn->query($sql) === TRUE) {
-            echo "New job created successfully";
+            header("Location: /job-portal/controllers/views/viewJobController.php");
+            echo "Job updated successfully";
+
+            exit();
         } else {
             echo "Error: " . $conn->error;
         }

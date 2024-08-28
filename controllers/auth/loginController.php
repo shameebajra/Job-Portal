@@ -1,20 +1,22 @@
 <?php
 session_start();
 
-// Check if user is already logged in and if the user role is set in the session
-if (isset($_SESSION['username']) && isset($_SESSION['role'])) {
+// Redirect if the user is already logged in
+if (isset($_SESSION['id']) && isset($_SESSION['role']) && isset($_SESSION['username'])) {
     $user_role = $_SESSION['role']; // Retrieve user role from session
+    $username = $_SESSION['username']; // Retrieve username from session
 
-    // Redirect user to the appropriate page
+    // Redirect user to the appropriate page based on their role
     if ($user_role == 'Admin') {
-        header("location: ../views/admin/adminDashboard.php");
+        header("Location: ../views/admin/adminDashboard.php");
         exit();
     } else if ($user_role == 'User') {
-        header("location: ../views/userDashboard.php");
+        header("Location: ../views/user/userDashboard.php");
         exit();
     }
 }
 
+// Continue with the login logic if not already logged in
 require_once "../config/db.php";
 
 // Initialize variables
@@ -23,6 +25,7 @@ $err = "";
 
 // Handle login request
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
+    // Validate input
     if (empty(trim($_POST["username"])) || empty(trim($_POST["password"])) || empty(trim($_POST["role"]))) {
         $err = "Please enter all fields.";
     } else {
@@ -64,10 +67,10 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
                                 // Redirect user to appropriate page
                                 if ($role == 'Admin') {
-                                    header("location: ../views/admin/adminDashboard.php");
+                                    header("Location: ../views/admin/adminDashboard.php");
                                     exit();
                                 } else if ($role == 'User') {
-                                    header("location: ../views/userDashboard.php");
+                                    header("Location: ../views/user/userDashboard.php");
                                     exit();
                                 }
                                 exit;

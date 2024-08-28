@@ -1,5 +1,11 @@
 <?php
+session_start();
 include '../../config/db.php';
+
+//Redirect to the login page if not logged in
+if (!isset($_SESSION['id'])) {
+    header("location:/job-portal/templates/login.php");
+}
 
 
 //cehck if the id parameter is set in the URL
