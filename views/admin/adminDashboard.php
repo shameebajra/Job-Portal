@@ -13,6 +13,8 @@
         <button>Logout</button>
     </form>
     <a href="/job-portal/views/admin/addJob.php">Add Job</a>
+    <a href="/job-portal/controllers/views/viewJobController.php">View Job</a>
+
 
 
 

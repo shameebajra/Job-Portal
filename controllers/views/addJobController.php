@@ -15,7 +15,6 @@ $titleErr = $descriptionErr = $positionErr = $locationErr =
     $application_emailErr = $application_urlErr = $statusErr =
     $remote_optionErr = $categoryErr = $logo_urlErr = "";
 
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Title
     if (empty($_POST["title"])) {
@@ -92,12 +91,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Application email
     if (empty($_POST["application_email"])) {
         $application_emailErr = "Application email is required";
+    } else if (!filter_var($application_email, FILTER_VALIDATE_EMAIL)) {
+        $application_emailErr = "Invalid email format";
     } else {
         $application_email = testInput($_POST["application_email"]);
     }
     // Application URL
     if (empty($_POST["application_url"])) {
         $application_urlErr = "Application URL is required";
+    } else if (!preg_match("/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i", $application_urlErr)) {
+        $application_urlErr = "Invalid URL ";
     } else {
         $application_url = testInput($_POST["application_url"]);
     }
@@ -120,11 +123,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Logo URL
     if (empty($_POST["logo_url"])) {
         $logo_urlErr = "Logo URL is required";
+    } else if (!preg_match("/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i", $logo_urlErr)) {
+        $logo_urlErr = "Invalid";
     } else {
         $logo_url = testInput($_POST["logo_url"]);
     }
 
-    // If no errors, insert data into the database using prepared statements
+    // If no errors, insert data into the database using direct SQL query
     if (
         empty($titleErr) && empty($descriptionErr) && empty($positionErr) && empty($locationErr) &&
         empty($deadlineErr) && empty($salaryErr) && empty($experienceErr) && empty($educationErr) &&
@@ -132,20 +137,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         empty($application_emailErr) && empty($application_urlErr) && empty($statusErr) &&
         empty($categoryErr) && empty($logo_urlErr)
     ) {
-        // Prepare the SQL statement
-        $stmt = $conn->prepare("INSERT INTO jobs (title, description, position, location, deadline, salary, experience, education, no_employee, skills, company_name, job_type, application_email, application_url, status, remote_option, category, logo_url)
-                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        // Bind parameters with corresponding types
-        $stmt->bind_param("sssssdissssssssss", $title, $description, $position, $location, $deadline, $salary, $experience, $education, $no_employee, $skills, $company_name, $job_type, $application_email, $application_url, $status, $remote_option, $category, $logo_url);
+        // Escape variables for use in SQL query
+        $title = $conn->real_escape_string($title);
+        $description = $conn->real_escape_string($description);
+        $position = $conn->real_escape_string($position);
+        $location = $conn->real_escape_string($location);
+        $deadline = $conn->real_escape_string($deadline);
+        $salary = $conn->real_escape_string($salary);
+        $experience = $conn->real_escape_string($experience);
+        $education = $conn->real_escape_string($education);
+        $no_employee = $conn->real_escape_string($no_employee);
+        $skills = $conn->real_escape_string($skills);
+        $company_name = $conn->real_escape_string($company_name);
+        $job_type = $conn->real_escape_string($job_type);
+        $application_email = $conn->real_escape_string($application_email);
+        $application_url = $conn->real_escape_string($application_url);
+        $status = $conn->real_escape_string($status);
+        $category = $conn->real_escape_string($category);
+        $logo_url = $conn->real_escape_string($logo_url);
 
-        if ($stmt->execute()) {
+        // Construct the SQL query
+        $sql = "INSERT INTO jobs (title, description, position, location, deadline, salary, experience, education, no_employee, skills, company_name, job_type, application_email, application_url, status, remote_option, category, logo_url)
+                VALUES ('$title', '$description', '$position', '$location', '$deadline', '$salary', '$experience', '$education', '$no_employee', '$skills', '$company_name', '$job_type', '$application_email', '$application_url', '$status', $remote_option, '$category', '$logo_url')";
+
+        if ($conn->query($sql) === TRUE) {
             echo "New job created successfully";
         } else {
-            echo "Error: " . $stmt->error;
+            echo "Error: " . $conn->error;
         }
-
-        // Close the statement
-        $stmt->close();
     }
 }
 
