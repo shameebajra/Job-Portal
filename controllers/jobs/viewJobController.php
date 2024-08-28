@@ -2,20 +2,33 @@
 session_start();
 include '../../config/db.php';
 
-//Redirect to the login page if not logged in
+// Redirect to the login page if not logged in
 if (!isset($_SESSION['id'])) {
     header("location:/job-portal/templates/login.php");
+    exit(); // Ensure script execution stops after redirect
 }
 
-// Fetch all job entries from the database
-$sql = "SELECT * FROM jobs";
-$result = $conn->query($sql);
+// Get the admin_id from the session
+$admin_id = isset($_SESSION['id']) ? $_SESSION['id'] : null;
+
+// Check if admin_id is not null
+if ($admin_id === null) {
+    echo "Admin ID is not set.";
+    exit();
+}
+
+// Fetch all job entries from the database where admin_id matches
+$sql = "SELECT * FROM jobs WHERE admin_id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $admin_id);
+$stmt->execute();
+$result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
     // Output data of each row
     echo "<table border='1'>
             <tr>
-                <th>ID</th>
+                <th>Job ID</th>
                 <th>Title</th>
                 <th>Description</th>
                 <th>Position</th>
@@ -40,27 +53,27 @@ if ($result->num_rows > 0) {
     // Loop through each row and display it in the table
     while ($row = $result->fetch_assoc()) {
         echo "<tr>
-                <td>" . $row["id"] . "</td>
-                <td>" . $row["title"] . "</td>
-                <td>" . $row["description"] . "</td>
-                <td>" . $row["position"] . "</td>
-                <td>" . $row["location"] . "</td>
-                <td>" . $row["deadline"] . "</td>
-                <td>" . $row["salary"] . "</td>
-                <td>" . $row["experience"] . "</td>
-                <td>" . $row["education"] . "</td>
-                <td>" . $row["no_employee"] . "</td>
-                <td>" . $row["skills"] . "</td>
-                <td>" . $row["company_name"] . "</td>
-                <td>" . $row["job_type"] . "</td>
-                <td>" . $row["application_email"] . "</td>
-                <td>" . $row["application_url"] . "</td>
-                <td>" . $row["status"] . "</td>
+                <td>" . htmlspecialchars($row["job_id"] ?? 'N/A') . "</td>
+                <td>" . htmlspecialchars($row["title"] ?? 'N/A') . "</td>
+                <td>" . htmlspecialchars($row["description"] ?? 'N/A') . "</td>
+                <td>" . htmlspecialchars($row["position"] ?? 'N/A') . "</td>
+                <td>" . htmlspecialchars($row["location"] ?? 'N/A') . "</td>
+                <td>" . htmlspecialchars($row["deadline"] ?? 'N/A') . "</td>
+                <td>" . htmlspecialchars($row["salary"] ?? 'N/A') . "</td>
+                <td>" . htmlspecialchars($row["experience"] ?? 'N/A') . "</td>
+                <td>" . htmlspecialchars($row["education"] ?? 'N/A') . "</td>
+                <td>" . htmlspecialchars($row["no_employee"] ?? 'N/A') . "</td>
+                <td>" . htmlspecialchars($row["skills"] ?? 'N/A') . "</td>
+                <td>" . htmlspecialchars($row["company_name"] ?? 'N/A') . "</td>
+                <td>" . htmlspecialchars($row["job_type"] ?? 'N/A') . "</td>
+                <td>" . htmlspecialchars($row["application_email"] ?? 'N/A') . "</td>
+                <td>" . htmlspecialchars($row["application_url"] ?? 'N/A') . "</td>
+                <td>" . htmlspecialchars($row["status"] ?? 'N/A') . "</td>
                 <td>" . ($row["remote_option"] ? 'Yes' : 'No') . "</td>
-                <td>" . $row["category"] . "</td>
-                <td>" . $row["logo_url"] . "</td>
-                <td><a href='/job-portal/views/admin/editJob.php?id=" . $row["id"] . "'>Edit</a></td>
-                <td><a href='/job-portal/controllers/jobs/deleteJobController.php?id=" . $row["id"] . "' onclick=\"return confirm('Are you sure you want to delete this job?');\">Delete</a></td>
+                <td>" . htmlspecialchars($row["category"] ?? 'N/A') . "</td>
+                <td>" . htmlspecialchars($row["logo_url"] ?? 'N/A') . "</td>
+                <td><a href='/job-portal/views/admin/editJob.php?id=" . htmlspecialchars($row["job_id"] ?? '') . "'>Edit</a></td>
+                <td><a href='/job-portal/controllers/jobs/deleteJobController.php?id=" . htmlspecialchars($row["job_id"] ?? '') . "' onclick=\"return confirm('Are you sure you want to delete this job?');\">Delete</a></td>
               </tr>";
     }
     echo "</table>";
@@ -68,4 +81,5 @@ if ($result->num_rows > 0) {
     echo "No jobs found.";
 }
 
+$stmt->close();
 $conn->close();

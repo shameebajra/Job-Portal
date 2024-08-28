@@ -25,7 +25,7 @@ $titleErr = $descriptionErr = $positionErr = $locationErr =
 if (isset($_GET['id'])) {
     $job_id = $_GET['id'];
 
-    $sql = "SELECT * FROM jobs WHERE id = ?";
+    $sql = "SELECT * FROM jobs WHERE job_id = ?";
     if ($stmt = $conn->prepare($sql)) {
         $stmt->bind_param("i", $job_id);
         $stmt->execute();
