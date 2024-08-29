@@ -14,11 +14,11 @@ if (isset($_GET['id'])) {
     $job_id = intval($_GET['id']);
 
     //Prepare the delete statement   
-    $sql = "DELETE FROM jobs where id =$job_id";
+    $sql = "DELETE FROM jobs where job_id =$job_id";
 
     if ($conn->query($sql) === TRUE) {
         // Redirect to the page where the job list is displayed after deletion
-        header("Location:/job-portal/controllers/views/viewJobController.php ");
+        header("Location:/job-portal/controllers/company/viewJobController.php ");
         exit();
     } else {
         echo "Error deleting record: " . $conn->error;

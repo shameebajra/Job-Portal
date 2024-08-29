@@ -8,12 +8,12 @@
 </head>
 
 <body>
-    <h1>I am USER</h1>
+    <h1>I am admin</h1>
     <form action="/job-portal/controllers/auth/logoutController.php">
         <button>Logout</button>
     </form>
-    <a href="/job-portal/views/admin/addJob.php">Add Job</a>
-    <a href="/job-portal/controllers/jobs/viewJobController.php">View Job</a>
+    <a href="/job-portal/views/company/addJob.php">Add Job</a>
+    <a href="/job-portal/controllers/company/viewJobController.php">View Job</a>
 
 
 

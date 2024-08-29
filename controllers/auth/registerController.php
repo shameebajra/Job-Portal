@@ -7,12 +7,12 @@ session_start();
 if (isset($_SESSION['username']) && isset($_SESSION['role'])) {
     $user_role = $_SESSION['role']; // Retrieve user role from session
 
-    // Redirect user to the appropriate page
-    if ($user_role == 'Admin') {
-        header("location: ../views/admin/adminDashboard.php");
+    // Redirect user to the appropriate page based on their role
+    if ($user_role == 'Company') {
+        header("Location: ../views/company/adminDashboard.php");
         exit();
-    } else if ($user_role == 'User') {
-        header("location: ../views/user/userDashboard.php");
+    } else if ($user_role == 'Job Seeker') {
+        header("Location: ../views/job_seeker/userDashboard.php");
         exit();
     }
 }

@@ -1,4 +1,4 @@
-<?php include('../../controllers/jobs/editJobController.php'); ?>
+<?php include('../../controllers/company/editJobController.php'); ?>
 <!DOCTYPE html>
 <html lang="en">
 

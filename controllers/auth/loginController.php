@@ -7,11 +7,11 @@ if (isset($_SESSION['id']) && isset($_SESSION['role']) && isset($_SESSION['usern
     $username = $_SESSION['username']; // Retrieve username from session
 
     // Redirect user to the appropriate page based on their role
-    if ($user_role == 'Admin') {
-        header("Location: ../views/admin/adminDashboard.php");
+    if ($user_role == 'Company') {
+        header("Location: ../views/company/adminDashboard.php");
         exit();
-    } else if ($user_role == 'User') {
-        header("Location: ../views/user/userDashboard.php");
+    } else if ($user_role == 'Job Seeker') {
+        header("Location: ../views/job_seeker/userDashboard.php");
         exit();
     }
 }
@@ -66,11 +66,11 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                                 $_SESSION["loggedin"] = true;
 
                                 // Redirect user to appropriate page
-                                if ($role == 'Admin') {
-                                    header("Location: ../views/admin/adminDashboard.php");
+                                if ($role == 'Company') {
+                                    header("Location: ../views/company/adminDashboard.php");
                                     exit();
-                                } else if ($role == 'User') {
-                                    header("Location: ../views/user/userDashboard.php");
+                                } else if ($role == 'Job Seeker') {
+                                    header("Location: ../views/job_seeker/userDashboard.php");
                                     exit();
                                 }
                                 exit;

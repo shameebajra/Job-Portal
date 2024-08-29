@@ -72,8 +72,8 @@ if ($result->num_rows > 0) {
                 <td>" . ($row["remote_option"] ? 'Yes' : 'No') . "</td>
                 <td>" . htmlspecialchars($row["category"] ?? 'N/A') . "</td>
                 <td>" . htmlspecialchars($row["logo_url"] ?? 'N/A') . "</td>
-                <td><a href='/job-portal/views/admin/editJob.php?id=" . htmlspecialchars($row["job_id"] ?? '') . "'>Edit</a></td>
-                <td><a href='/job-portal/controllers/jobs/deleteJobController.php?id=" . htmlspecialchars($row["job_id"] ?? '') . "' onclick=\"return confirm('Are you sure you want to delete this job?');\">Delete</a></td>
+                <td><a href='/job-portal/views/company/editJob.php?id=" . htmlspecialchars($row["job_id"] ?? '') . "'>Edit</a></td>
+                <td><a href='/job-portal/controllers/company/deleteJobController.php?id=" . htmlspecialchars($row["job_id"] ?? '') . "' onclick=\"return confirm('Are you sure you want to delete this job?');\">Delete</a></td>
               </tr>";
     }
     echo "</table>";

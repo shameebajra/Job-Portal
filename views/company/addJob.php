@@ -1,5 +1,5 @@
 <?php
-include('../../controllers/jobs/addJobController.php');
+include('../../controllers/company/addJobController.php');
 ?>
 <!DOCTYPE html>
 <html lang="en">
