@@ -76,7 +76,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 VALUES ('$fullname', '$phonenumber', '$email', '$cv', " . ($linkedin ? "'$linkedin'" : "NULL") . ", $job_id)";
 
         if ($conn->query($sql) === TRUE) {
-            echo "CV submitted successfully.";
+            header("location:../../controllers/job_seeker/viewJobController.php");
         } else {
             echo "Error: " . $conn->error;
         }

@@ -14,6 +14,8 @@
     </form>
     <a href="/job-portal/views/company/addJob.php">Add Job</a>
     <a href="/job-portal/controllers/company/viewJobController.php">View Job</a>
+    <a href="/job-portal/templates/changePassword.php">Change Password</a>
+
 
 
 
