@@ -1,11 +1,11 @@
 <?php
+session_start();
+include '../config/db.php';
 
 //Redirects to the logged in page if the user is looged in 
-session_start();
-
-// Check if user is already logged in and if the user role is set in the session
 if (isset($_SESSION['username']) && isset($_SESSION['role'])) {
-    $user_role = $_SESSION['role']; // Retrieve user role from session
+    // Retrieve user role from session
+    $user_role = $_SESSION['role'];
 
     // Redirect user to the appropriate page based on their role
     if ($user_role == 'Company') {
@@ -17,85 +17,76 @@ if (isset($_SESSION['username']) && isset($_SESSION['role'])) {
     }
 }
 
-
-include '../config/db.php';
-
 // Define variables and initialize with empty values
 $username = $password = $confirm_password = $role = "";
-$username_err = $password_err = $confirm_password_err = $role_err = "";
+$usernameErr  = $passwordErr = $confirm_passwordErr = $roleErr = "";
 
-// Processing form data when form is submitted
+// Processing form data when the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Check for username
-    $input_username = trim($_POST["username"]);
 
-    if (empty($input_username)) {
-        $username_err = "Username is required";
-    } elseif (!preg_match('/^[a-zA-Z0-9_]+$/', $input_username)) {
-        $username_err = "Username can only contain letters, numbers, and underscores";
+    // Username validation
+    if (empty(trim($_POST["username"]))) {
+        $usernameErr = "Username is required";
+    } elseif (!preg_match('/^[a-zA-Z0-9_]+$/', trim($_POST["username"]))) {
+        $usernameErr = "Username can only contain letters, numbers, and underscores";
     } else {
+        // Check if the username already exists
         $sql = "SELECT id FROM users WHERE username = ?";
-        $stmt = mysqli_prepare($conn, $sql);
-        if ($stmt) {
-            mysqli_stmt_bind_param($stmt, "s", $param_username);
+        if ($stmt = $conn->prepare($sql)) {
+            $stmt->bind_param("s", $param_username);
+            $param_username = trim($_POST["username"]);
+            $stmt->execute();
+            $stmt->store_result();
 
-            // Set value to the param username
-            $param_username = $input_username;
-
-            // Try to execute this statement
-            if (mysqli_stmt_execute($stmt)) {
-                mysqli_stmt_store_result($stmt);
-                if (mysqli_stmt_num_rows($stmt) == 1) {
-                    $username_err = "This username is already taken.";
-                } else {
-                    $username = $input_username;
-                }
+            if ($stmt->num_rows == 1) {
+                $usernameErr = "This username is already taken.";
             } else {
-                echo "Something went wrong. Please try again later.";
+                $username = trim($_POST["username"]);
             }
+            $stmt->close();
         }
     }
 
-    // Check for password
+
+    // Password validation
     if (empty(trim($_POST['password']))) {
-        $password_err = 'Password cannot be empty.';
+        $passwordErr = "Password cannot be empty.";
     } elseif (strlen(trim($_POST['password'])) < 6) {
-        $password_err = 'Password cannot be less than 6 characters.';
+        $passwordErr = "Password cannot be less than 6 characters.";
     } else {
         $password = trim($_POST['password']);
     }
 
-    // Check for confirmation password 
+    // Confirm password validation
     if (empty(trim($_POST["confirm_password"]))) {
-        $confirm_password_err = "Confirmation password is required";
-    } elseif (trim($_POST["password"]) != trim($_POST["confirm_password"])) {
-        $confirm_password_err = "Passwords should match";
+        $confirm_passwordErr = "Confirmation password is required";
+    } elseif (trim($_POST["confirm_password"]) !== $password) {
+        $confirm_passwordErr = "Passwords do not match.";
     }
 
-    // Check for role
+    // Role validation
     if (empty($_POST['role'])) {
-        $role_err = "Select a role.";
+        $roleErr = "Please select a role.";
     } else {
         $role = trim($_POST["role"]);
     }
 
-    // Check for errors before inserting in the database
-    if (empty($username_err) && empty($password_err) && empty($confirm_password_err) && empty($role_err)) {
-        // Hash password before storing
+    // If no errors, proceed with inserting into the database
+    if (empty($usernameErr) && empty($passwordErr) && empty($confirm_passwordErr) && empty($roleErr)) {
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-        // Prepare and bind SQL statement
-        $stmt = $conn->prepare("INSERT INTO users (username, password, role) VALUES (?, ?, ?)");
-        $stmt->bind_param("sss", $username, $hashed_password, $role);
-
-        // Execute and check for errors
-        if ($stmt->execute()) {
-            echo "Registration Successful";
-        } else {
-            echo "Registration Unsuccessful: " . $stmt->error;
+        // prepare and bind
+        $sql = "INSERT INTO users (username, password, role) VALUES (?, ?, ?)";
+        if ($stmt = $conn->prepare($sql)) {
+            $stmt->bind_param("sss", $username, $hashed_password, $role);
+            if ($stmt->execute()) {
+                echo "Registration successful!";
+                // Optionally redirect to the login page or dashboard
+            } else {
+                echo "Error: " . $stmt->error;
+            }
+            $stmt->close();
         }
-
-        $stmt->close();
     }
 
     $conn->close();

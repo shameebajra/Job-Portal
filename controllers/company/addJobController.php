@@ -9,7 +9,7 @@ if (!isset($_SESSION['id'])) {
 }
 
 
-// Define variables and set to empty values
+// Define variables 
 $title = $description = $position = $location =
     $deadline = $salary = $experience = $education =
     $no_employee = $skills = $company_name = $job_type =
@@ -29,9 +29,7 @@ $titleErr = $descriptionErr = $positionErr = $locationErr =
 $admin_id = isset($_SESSION['id']) ? $_SESSION['id'] : null;
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    /**
-     * Validations
-     */
+
     // Title
     if (empty($_POST["title"])) {
         $titleErr = "Title is required";
@@ -165,10 +163,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $category = $conn->real_escape_string($category);
         $logo_url = $conn->real_escape_string($logo_url);
 
-        // Check if the user is logged in and `admin_id` is available in the session
-        if (!isset($_SESSION['id'])) {
-            die("Error: User is not logged in.");
-        }
 
         $admin_id = $_SESSION['id'];
 

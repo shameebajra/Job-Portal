@@ -16,6 +16,7 @@ include "../controllers/auth/changePasswordController.php";
         <h2>Change password</h2>
         Current password<br>
         <input type="password" name="oldPassword" id="oldPassword"><br><br>
+
         New password<br>
         <input type="password" name="newPassword" id="newPassword"><br><br>
         Confirm password<br>
