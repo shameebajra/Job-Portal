@@ -11,12 +11,6 @@ if (!isset($_SESSION['id'])) {
 // Get the admin_id from the session
 $admin_id = isset($_SESSION['id']) ? $_SESSION['id'] : null;
 
-// Check if admin_id is not null
-if ($admin_id === null) {
-    echo "Admin ID is not set.";
-    exit();
-}
-
 // Fetch all job entries from the database where admin_id matches
 $sql = "SELECT * FROM jobs WHERE admin_id = ?";
 $stmt = $conn->prepare($sql);
@@ -47,7 +41,8 @@ if ($result->num_rows > 0) {
                 <th>Remote Option</th>
                 <th>Category</th>
                 <th>Logo URL</th>
-                <th colspan='2'>Action</th>          
+                <th colspan='2'>Action</th>  
+                <th>Application</th>        
             </tr>";
 
     // Loop through each row and display it in the table
@@ -74,6 +69,8 @@ if ($result->num_rows > 0) {
                 <td>" . htmlspecialchars($row["logo_url"] ?? 'N/A') . "</td>
                 <td><a href='/job-portal/views/company/editJob.php?id=" . htmlspecialchars($row["job_id"] ?? '') . "'>Edit</a></td>
                 <td><a href='/job-portal/controllers/company/deleteJobController.php?id=" . htmlspecialchars($row["job_id"] ?? '') . "' onclick=\"return confirm('Are you sure you want to delete this job?');\">Delete</a></td>
+                <td><a href='/job-portal/controllers/company/applicationController.php?job_id=" . htmlspecialchars($row["job_id"] ?? '') . "'>View Application</a></td>
+
               </tr>";
     }
     echo "</table>";

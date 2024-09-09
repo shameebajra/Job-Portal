@@ -80,10 +80,10 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                                 }
                                 exit();
                             } else {
-                                $loginErr = "Invalid password.";
+                                $passwordErr = "Invalid password.";
                             }
                         } else {
-                            $loginErr = "The selected role does not match your account.";
+                            $roleErr = "The selected role does not match your account.";
                         }
                     }
                 } else {

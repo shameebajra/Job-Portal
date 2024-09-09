@@ -11,7 +11,7 @@ if (!isset($_SESSION['id'])) {
 //cehck if the id parameter is set in the URL
 if (isset($_GET['id'])) {
     //get  the job ID from the url
-    $job_id = intval($_GET['id']);
+    $job_id = $_GET['id'];
 
     //Prepare the delete statement   
     $sql = "DELETE FROM jobs where job_id =$job_id";
