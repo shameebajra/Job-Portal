@@ -14,7 +14,7 @@ if (!isset($_GET['job_id'])) {
     exit();
 }
 
-$job_id = $_GET['job_id'];  // Cast to integer for safety
+$job_id = $_GET['job_id'];
 
 // Fetch all CV entries from the database where job_id matches
 $sql = "SELECT * FROM cvs WHERE job_id = ?";

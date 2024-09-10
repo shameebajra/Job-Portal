@@ -14,6 +14,7 @@ include "../controllers/auth/registerController.php";
 
 </head>
 
+
 <body>
     <div class="container">
         <!-- <div class="logo">glumos</div> -->

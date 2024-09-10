@@ -87,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                         }
                     }
                 } else {
-                    $loginErr = "No account found with that username.";
+                    $usernameErr = "No account found with that username.";
                 }
             } else {
                 $loginErr = "Oops! Something went wrong. Please try again later.";
@@ -97,10 +97,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     }
 }
 
-// Display error messages if any
-if (!empty($usernameErr) || !empty($passwordErr) || !empty($roleErr) || !empty($loginErr)) {
-    echo "<div class='error'>$usernameErr $passwordErr $roleErr $loginErr</div>";
-}
 
 // Function to sanitize inputs
 function testInput($data)

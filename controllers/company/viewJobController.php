@@ -5,7 +5,7 @@ include '../../config/db.php';
 // Redirect to the login page if not logged in
 if (!isset($_SESSION['id'])) {
     header("location:/job-portal/templates/login.php");
-    exit(); // Ensure script execution stops after redirect
+    exit();
 }
 
 // Get the admin_id from the session
